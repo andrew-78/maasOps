@@ -1,0 +1,76 @@
+#!/bin/bash
+
+function maas-store() {
+	maas-ip > $MAAS_STORE
+	sed '/ADDRESS/d' $MAAS_STORE > $MAAS_STORE.bak
+	sed '/-----/d' $MAAS_STORE.bak > $MAAS_STORE
+}
+
+function maas-restore() {
+	if [ -f $MAAS_STORE ]; then
+		rm $MAAS_STORE -f
+	fi
+	if [ -f $MAAS_STORE.bak ]; then
+		rm $MAAS_STORE.bak -f
+	fi
+	maas-store
+}
+
+function check-maas-store() {
+	if ! [ -f $MAAS_STORE ]; then 
+		maas-store
+	fi
+}
+
+function maas-show() {
+
+	check-maas-store
+
+	for line in $(cat $MAAS_STORE |grep ' on ' | awk '{ print $1 ","$4 }') ; do 
+		echo "#-----------------------------------------------------------------------------------"
+		line=$(echo $line | awk -F ',' '{print $1" "$2}')
+		read -r NODE ADDR <<<$(echo $line)
+		echo "$NODE: $ADDR"  
+	done
+}
+
+function maas-ssh() {
+
+	check-maas-store
+
+	for line in $(cat $MAAS_STORE |grep ' on ' | awk '{ print $1 ","$4 }') ; do 
+		echo "#-----------------------------------------------------------------------------------"
+		line=$(echo $line | awk -F ',' '{print $1" "$2}')
+		read -r NODE ADDR <<<$(echo $line)
+		echo "$NODE: $ADDR"  
+		echo "sshpass ssh -o StrictHostKeyChecking=no ubuntu@$ADDR $1 $2 $3 $4 $5"
+		sshpass ssh -o StrictHostKeyChecking=no ubuntu@$ADDR $1 $2 $3 $4 $5 
+	done
+}
+
+function maas-scp() {
+
+	check-maas-store
+
+	for line in $(cat $MAAS_STORE |grep ' on ' | awk '{ print $1 ","$4 }') ; do 
+		echo "#-----------------------------------------------------------------------------------"
+		line=$(echo $line | awk -F ',' '{print $1" "$2}')
+		read -r NODE ADDR <<<$(echo $line)
+		echo "$NODE: $ADDR" 
+		echo "sshpass scp -o StrictHostKeyChecking=no $1 ubuntu@$ADDR:"
+		sshpass scp -o StrictHostKeyChecking=no $1 ubuntu@$ADDR:
+	done
+}
+
+function maas-clear-ssh-keygen() {
+	for ADDR in $(cat $MAAS_STORE |grep ' on ' | awk '{ print $4 }')
+	do
+		echo "#-----------------------------------------------------------------------------------"
+		echo "# ssh-keygen -f \"/$HOME/.ssh/known_hosts\" -R \"$ADDR\""
+		ssh-keygen -f "$HOME/.ssh/known_hosts" -R "$ADDR"
+		echo "# ssh-keygen -f "$HOME/.ssh/known_hosts" -R "$NODE""
+		ssh-keygen -f "$HOME/.ssh/known_hosts" -R "$NODE"
+	done
+}
+
+

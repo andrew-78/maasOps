@@ -1,0 +1,26 @@
+#!/bin/bash
+#
+# Devstack
+#
+
+# ALIAS
+alias so='source ~/.bashrc'
+alias vi='vim'
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias .....='cd ../../../..'
+alias src='cd $HOME/projects/go/src'
+alias git-store='git config credential.helper store'
+
+# EXPORT ENV VARS
+#export GOROOT=/snap/go/current
+export GOROOT=/usr/local/go
+export GOPATH=$HOME/projects/go
+export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
+export PATH=$PATH:/usr/local/go/bin
+
+# EXPORT COLORS
+#LS_COLORS='di=33:fi=0:ln=31:pi=5:so=5:bd=5:cd=5:or=31:mi=0:ex=35:*.rpm=90'
+#export LS_COLORS
+

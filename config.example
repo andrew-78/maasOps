@@ -1,0 +1,9 @@
+#!/bin/sh
+#
+# Devstack
+#
+
+# Set API_SERVER variable
+# - You can get from "sudo maas config"
+# - maas_url
+API_SERVER=192.168.201.18:5240

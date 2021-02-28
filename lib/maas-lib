@@ -1,0 +1,69 @@
+#!/bin/bash
+
+#
+# MaaS commands & REST APIs
+#
+# https://maas.io/docs/common-cli-tasks
+#
+
+function maas-get-config() {
+	sudo maas config
+}
+
+function maas-get-key() {
+	sudo maas apikey --username $PROFILE > $API_KEY_FILE
+}
+
+function check-maas-key() {
+	if ! [ -f $API_KEY_FILE ]; then 
+		maas-get-key
+	fi
+}
+
+function maas-login() {
+
+	check-maas-key
+
+	# do login
+	echo "sudo maas login $PROFILE $MAAS_URL - < $API_KEY_FILE"
+	sudo maas login $PROFILE $MAAS_URL - < $API_KEY_FILE
+}
+
+function maas-nodes() {
+	echo "sudo maas $PROFILE nodes read"
+	sudo maas $PROFILE nodes read
+}
+
+function maas-ip() {
+	sudo maas $PROFILE machines read | jq -r '(["HOSTNAME",
+	"POWER",
+	"STATUS",
+	"ADDRESS"
+	] | (., map(length*"-"))),
+	(.[] | [.hostname, 
+	.power_state, 
+	.status_name, 
+	.boot_interface.links[0].ip_address
+	]) | @tsv' | column -t \
+	| sort -k 1
+}
+
+function maas-list() {
+	sudo maas $PROFILE machines read | jq -r '(["HOSTNAME","SYSID","POWER","STATUS",
+	"OWNER", "TAGS", "POOL", "VLAN","FABRIC","ADDRESS","SUBNET"] | (., map(length*"-"))),
+	(.[] | [.hostname, 
+	.system_id, 
+	.power_state, 
+	.status_name, 
+	.owner // "-",
+	.tag_names[0] // "-", 
+	.pool.name,
+	.boot_interface.vlan.name, 
+	.boot_interface.vlan.fabric,
+	.boot_interface.links[0].ip_address,
+	.boot_interface.links[0].subnet.name
+	]) | @tsv' | column -t \
+	| sort -k 1
+}
+
+

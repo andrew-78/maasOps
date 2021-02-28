@@ -1,0 +1,52 @@
+#!/bin/bash
+
+function maas-ib-check-pci() {
+	maas-ssh "lspci | grep -i mellanox"
+}
+
+function maas-ib-prepare() {
+	echo ""
+	echo "InfiniBand: Prepare"
+	echo ""
+	maas-ssh "sudo apt-get install perl dpkg autotools-dev autoconf libtool automake1.10 automake m4 dkms debhelper tcl chrpath swig graphviz tcl-dev tk-dev bison flex dpatch zlib1g-dev curl libcurl4-gnutls-dev python-libxml2 libvirt0 libglib2.0-dev automake m4 pkg-config logrotate ethtool -y"
+}
+
+MLNX_OFED_PKG=MLNX_OFED_LINUX-5.2-2.2.0.0-ubuntu20.04-x86_64
+MLNX_OFED_PKG_TAR=$MLNX_OFED_PKG.tgz
+
+function maas-ib-copy-mlnx-ofed() {
+	echo ""
+	echo "InfiniBand : Copy MLNX-OFED"
+	echo ""
+	#wget "http://180.210.14.253/ds-download/MLNX_OFED_LINUX-5.2-2.2.0.0-ubuntu20.04-x86_64.tgz -O ../output/MLNX_OFED_LINUX-5.2-2.2.0.0-ubuntu20.04-x86_64.tgz"
+	if ! [ -f $OUTPUT/$MLNX_OFED_PKG_TAR ]; then 
+		echo "wget http://180.210.14.253/ds-download/$MLNX_OFED_PKG_TAR -O $OUTPUT/$MLNX_OFED_PKG_TAR"
+		wget "http://180.210.14.253/ds-download/$MLNX_OFED_PKG_TAR -O $OUTPUT/$MLNX_OFED_PKG_TAR"
+	fi
+	if [ -f $OUTPUT/$MLNX_OFED_PKG_TAR ]; then 
+		maas-scp $OUTPUT/$MLNX_OFED_PKG_TAR
+		maas-ssh "tar -xvf $MLNX_OFED_PKG_TAR"
+	fi
+}
+
+function maas-ib-install-mlnx-ofed() {
+	echo ""
+	echo "InfiniBand : Install MLNX-OFED"
+	echo ""
+	maas-ssh "cd $MLNX_OFED_PKG; sudo ./mlnxofedinstall --force"
+}
+
+function maas-ib-restart-openibd() {
+	echo ""
+	echo "InfiniBand : Restart openibd"
+	echo ""
+	maas-ssh "sudo /etc/init.d/openibd restart"
+}
+
+function maas-ib-devinfo() {
+	echo ""
+	echo "InfiniBand : devinfo"
+	echo ""
+	maas-ssh "sudo ibv_devinfo"
+}
+
