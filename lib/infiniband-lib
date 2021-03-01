@@ -21,7 +21,7 @@ function maas-ib-copy-mlnx-ofed() {
 	#wget "http://180.210.14.253/ds-download/MLNX_OFED_LINUX-5.2-2.2.0.0-ubuntu20.04-x86_64.tgz -O ../output/MLNX_OFED_LINUX-5.2-2.2.0.0-ubuntu20.04-x86_64.tgz"
 	if ! [ -f $OUTPUT/$MLNX_OFED_PKG_TAR ]; then 
 		echo "wget http://180.210.14.253/ds-download/$MLNX_OFED_PKG_TAR -O $OUTPUT/$MLNX_OFED_PKG_TAR"
-		wget "http://180.210.14.253/ds-download/$MLNX_OFED_PKG_TAR -O $OUTPUT/$MLNX_OFED_PKG_TAR"
+        wget http://180.210.14.253/ds-download/$MLNX_OFED_PKG_TAR -O $OUTPUT/$MLNX_OFED_PKG_TAR
 	fi
 	if [ -f $OUTPUT/$MLNX_OFED_PKG_TAR ]; then 
 		maas-scp $OUTPUT/$MLNX_OFED_PKG_TAR

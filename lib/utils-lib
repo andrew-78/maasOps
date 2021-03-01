@@ -27,10 +27,9 @@ function maas-show() {
 	check-maas-store
 
 	for line in $(cat $MAAS_STORE |grep ' on ' | awk '{ print $1 ","$4 }') ; do 
-		echo "#-----------------------------------------------------------------------------------"
 		line=$(echo $line | awk -F ',' '{print $1" "$2}')
 		read -r NODE ADDR <<<$(echo $line)
-		echo "$NODE: $ADDR"  
+		echo "$NODE $ADDR"  
 	done
 }
 

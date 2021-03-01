@@ -57,6 +57,8 @@ function maas-usage() {
 	echo ""
 	echo "    Utils: "
 	N=$(($N+1))
+	echo "      $N) maas-show"
+	N=$(($N+1))
 	echo "      $N) maas-ssh ARGS"
 	N=$(($N+1))
 	echo "      $N) maas-scp ARGS"
