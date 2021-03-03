@@ -3,3 +3,5 @@
 output
 config
 maas-node-list
+nodes-ip  
+nodes-name

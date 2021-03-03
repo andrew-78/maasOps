@@ -41,7 +41,7 @@ function maas-usage() {
 	N=$(($N+1))
 	echo "      $N) maas-nodes"
 	echo ""
-	echo "    InfiniBand:: "
+	echo "    InfiniBand: "
 	N=$(($N+1))
 	echo "      $N) maas-ib-check-pci"
 	N=$(($N+1))
@@ -64,6 +64,8 @@ function maas-usage() {
 	echo "      $N) maas-scp ARGS"
 	N=$(($N+1))
 	echo "      $N) maas-clear-ssh-keygen"
+	N=$(($N+1))
+	echo "      $N) maas-copy-ssh-authkey-into-root"
 	echo ""
 }
 

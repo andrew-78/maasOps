@@ -22,6 +22,17 @@ function check-maas-store() {
 	fi
 }
 
+function maas-show-hostname() {
+
+	check-maas-store
+
+	for line in $(cat $MAAS_STORE |grep ' on ' | awk '{ print $1 ","$4 }') ; do 
+		line=$(echo $line | awk -F ',' '{print $1" "$2}')
+		read -r NODE ADDR<<<$(echo $line)
+		echo "$NODE"
+	done
+}
+
 function maas-show() {
 
 	check-maas-store
@@ -29,7 +40,7 @@ function maas-show() {
 	for line in $(cat $MAAS_STORE |grep ' on ' | awk '{ print $1 ","$4 }') ; do 
 		line=$(echo $line | awk -F ',' '{print $1" "$2}')
 		read -r NODE ADDR <<<$(echo $line)
-		echo "$NODE $ADDR"  
+		echo "$ADDR $NODE"  
 	done
 }
 
@@ -72,4 +83,7 @@ function maas-clear-ssh-keygen() {
 	done
 }
 
+function maas-copy-ssh-authkey-into-root() {
+     maas-ssh "sudo cp /home/ubuntu/.ssh/authorized_keys /root/.ssh/authorized_keys"
+}
 
