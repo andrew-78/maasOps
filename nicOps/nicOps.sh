@@ -13,6 +13,7 @@ source ./lib/lib-ssh
 VLAN_MGMT=vlan101
 VLAN_REPLICA=vlan102
 VLAN_VXLAN=vlan103
+VLAN_STORAGE=vlan104
 MTU_STORAGE=4900
 
 source ./lib/lib-network-controller
@@ -154,6 +155,10 @@ function nic-scp-network-config()
         if [ -f output/$NODE.net.conf ] ; then
             echo "# sshpass scp -o StrictHostKeyChecking=no $NODE.net.conf $RUSER@$NODE:$RHOME"
             sshpass scp -o StrictHostKeyChecking=no output/$NODE.net.conf $RUSER@$NODE:$RHOME
+            echo "# sshpass scp -o StrictHostKeyChecking=no etc/br-dummy0.cfg $RUSER@$NODE:$RHOME"
+            sshpass scp -o StrictHostKeyChecking=no etc/br-dummy0.cfg $RUSER@$NODE:$RHOME
+            echo "# sshpass scp -o StrictHostKeyChecking=no etc/br-dummy1.cfg $RUSER@$NODE:$RHOME"
+            sshpass scp -o StrictHostKeyChecking=no etc/br-dummy1.cfg $RUSER@$NODE:$RHOME
         else
             echo "WARN: output/$Node.net.conf dosen't exist!"
         fi
@@ -166,8 +171,14 @@ function nic-mv-network-config()
     for NODE in $VM_LIST
     do
         echo "#--------------------------------------------------------------------------------"
-        echo "sshpass ssh -o StrictHostKeyChecking=no $RUSER@$NODE mv $NODE.net.conf $REMOTE_NET_CONF_PATH"
+        echo "# sshpass ssh -o StrictHostKeyChecking=no $RUSER@$NODE mv $NODE.net.conf $REMOTE_NET_CONF_PATH"
         sshpass ssh -o StrictHostKeyChecking=no $RUSER@$NODE mv $NODE.net.conf $REMOTE_NET_CONF_PATH
+        echo "# sshpass ssh -o StrictHostKeyChecking=no $RUSER@$NODE mkdir -p /etc/network/interfaces.d/"
+        sshpass ssh -o StrictHostKeyChecking=no $RUSER@$NODE mkdir -p /etc/network/interfaces.d/
+        echo "# sshpass ssh -o StrictHostKeyChecking=no $RUSER@$NODE cp br-dummy0.cfg /etc/network/interfaces.d/"
+        sshpass ssh -o StrictHostKeyChecking=no $RUSER@$NODE cp br-dummy0.cfg /etc/network/interfaces.d/
+        echo "# sshpass ssh -o StrictHostKeyChecking=no $RUSER@$NODE cp br-dummy1.cfg /etc/network/interfaces.d/"
+        sshpass ssh -o StrictHostKeyChecking=no $RUSER@$NODE cp br-dummy1.cfg /etc/network/interfaces.d/
     done
 }
 

@@ -77,6 +77,9 @@ network:
         vlan103:
             id: 103
             link: bond0
+        vlan104:
+            id: 104
+            link: bond0
     bridges:
         br-ex:
             interfaces: [eno2]
@@ -97,7 +100,7 @@ network:
             dhcp4: no
             dhcp6: no
         br-storage:
-            interfaces: [ibp3s0]
+            interfaces: [${VLAN_STORAGE}]
             addresses: [${STORAGE_ADDR}]
             mtu: 1500
             dhcp4: no
@@ -195,6 +198,9 @@ network:
         vlan103:
             id: 103
             link: bond0
+        vlan104:
+            id: 104
+            link: bond0
     bridges:
         br-ex:
             interfaces: [eno2]
@@ -215,7 +221,7 @@ network:
             dhcp4: no
             dhcp6: no
         br-storage:
-            interfaces: [ibp3s0f0]
+            interfaces: [${VLAN_STORAGE}]
             addresses: [${STORAGE_ADDR}]
             mtu: 1500
             dhcp4: no
