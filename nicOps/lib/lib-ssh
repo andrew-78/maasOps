@@ -50,3 +50,28 @@ function nic-ssh() {
     done
 }
 
+function nic-clear-ssh-keygen() {
+    ARG_1=$1
+    ARG_2=$2
+    ARG_3=$3
+    ARG_4=$4
+
+    if ! [ -f $NODES_IP_PATH ] ; then
+        echo "It does not $NODES_IP_PATH"
+        return
+    fi
+
+    for line in $(cat $NODES_IP_PATH | awk '{ print $1 "," $2}')
+    do
+        line=$(echo $line | awk -F ',' '{print $1" "$2}')
+        read -r ADDR NODE <<<$(echo $line)
+        ARGS="$ARG_1 $ARG_2 $ARG_3 $ARG_4"
+        echo "#------------------------------------------------------------------------------"
+        echo "# $NODE: $ADDR"
+		echo "# ssh-keygen -f \"/$HOME/.ssh/known_hosts\" -R \"$ADDR\""
+		ssh-keygen -f "$HOME/.ssh/known_hosts" -R "$ADDR"
+		echo "# ssh-keygen -f "$HOME/.ssh/known_hosts" -R "$NODE""
+		ssh-keygen -f "$HOME/.ssh/known_hosts" -R "$NODE"
+    done
+}
+
