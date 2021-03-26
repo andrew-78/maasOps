@@ -14,12 +14,14 @@ VLAN_MGMT=vlan101
 VLAN_REPLICA=vlan102
 VLAN_VXLAN=vlan103
 VLAN_STORAGE=vlan104
-MTU_STORAGE=4900
+VLAN_LBAAS=vlan105
+FIBER_MTU=9000
 
 source ./lib/lib-network-controller
 source ./lib/lib-network-compute
 source ./lib/lib-network-ironic
 source ./lib/lib-network-storage
+source ./etc/node-ip-vars
 
 REMOTE_NET_CONF_PATH="/etc/netplan/50-cloud-init.yaml"
 
@@ -75,24 +77,49 @@ function check-node()
 function nic-make-network-config()
 {
     EX=$EX_NUM
-    MGMT=$MGMT_NUM
-    STORAGE=$STORAGE_NUM
-    VXLAN=$VXLAN_NUM
-    REPLICA=$REPLICA_NUM
-    VLAN=$VLAN_NUM
 
     if [ ! -d "output" ] ;then
 	    echo "mkdir output"
 	    mkdir output
     fi
+
+    #
+    # controller
+    # 11 ~
+    #
+
+    MGMT=$MGMT_NUM
+    STORAGE=$STORAGE_NUM
+    VXLAN=$VXLAN_NUM
+    REPLICA=$REPLICA_NUM
+    VLAN=$VLAN_NUM
+    LBAAS=$LBAAS_NUM
+    IPOIB=$IPOIB_NUM
+
     for NODE in $VM_LIST
     do
+        if ! [ -z ${NODE##*"controller"*} ] ;then
+            continue
+        fi
+
         EX_ADDR="$EX_PREFIX.$EX/$EX_PREFIX_LEN"
         MGMT_ADDR="$MGMT_PREFIX.$MGMT/$MGMT_PREFIX_LEN"
         STORAGE_ADDR="$STORAGE_PREFIX.$STORAGE/$STORAGE_PREFIX_LEN"
         VXLAN_ADDR="$VXLAN_PREFIX.$VXLAN/$VXLAN_PREFIX_LEN"
         REPLICA_ADDR="$REPLICA_PREFIX.$REPLICA/$REPLICA_PREFIX_LEN"
         VLAN_ADDR="$VLAN_PREFIX.$VLAN/$VLAN_PREFIX_LEN"
+        LBAAS_ADDR="$LBAAS_PREFIX.$VLAN/$LBAAS_PREFIX_LEN"
+        IPOIB_ADDR="$IPOIB_PREFIX.$VLAN/$IPOIB_PREFIX_LEN"
+
+        echo "#--------------------------------------------------------------------------------"
+        echo "# $NODE"
+        if [ -z ${NODE##*"controller1"*} ] ;then
+            make_network_controller1 $EX_ADDR $EX_GW_ADDR $MGMT_ADDR $STORAGE_ADDR $VXLAN_ADDR $REPLICA_ADDR $VLAN_ADDR $LBAAS_ADDR $IPOIB_ADDR $NODE
+        elif [ -z ${NODE##*"controller2"*} ] ;then
+            make_network_controller2 $EX_ADDR $EX_GW_ADDR $MGMT_ADDR $STORAGE_ADDR $VXLAN_ADDR $REPLICA_ADDR $VLAN_ADDR $LBAAS_ADDR $IPOIB_ADDR $NODE
+        elif [ -z ${NODE##*"controller3"*} ] ;then
+            make_network_controller3 $EX_ADDR $EX_GW_ADDR $MGMT_ADDR $STORAGE_ADDR $VXLAN_ADDR $REPLICA_ADDR $VLAN_ADDR $LBAAS_ADDR $IPOIB_ADDR $NODE
+        fi
 
         EX=$(($EX+1))
         MGMT=$(($MGMT+1))
@@ -100,57 +127,150 @@ function nic-make-network-config()
         VXLAN=$(($VXLAN+1))
         REPLICA=$(($REPLICA+1))
         VLAN=$(($VLAN+1))
-
-        echo "#--------------------------------------------------------------------------------"
-        echo "# $NODE"
-        if [ -z ${NODE##*"controller1"*} ] ;then
-            make_network_controller1 $EX_ADDR $EX_GW_ADDR $MGMT_ADDR $STORAGE_ADDR $VXLAN_ADDR $REPLICA_ADDR $VLAN_ADDR $NODE
-        elif [ -z ${NODE##*"controller2"*} ] ;then
-            make_network_controller2 $EX_ADDR $EX_GW_ADDR $MGMT_ADDR $STORAGE_ADDR $VXLAN_ADDR $REPLICA_ADDR $VLAN_ADDR $NODE
-        elif [ -z ${NODE##*"controller3"*} ] ;then
-            make_network_controller3 $EX_ADDR $EX_GW_ADDR $MGMT_ADDR $STORAGE_ADDR $VXLAN_ADDR $REPLICA_ADDR $VLAN_ADDR $NODE
-        elif [ -z ${NODE##*"ironic1"*} ] ;then
-            make_network_ironic1 $EX_ADDR $EX_GW_ADDR $MGMT_ADDR $STORAGE_ADDR $VXLAN_ADDR $REPLICA_ADDR $VLAN_ADDR $NODE
-        elif [ -z ${NODE##*"ironic2"*} ] ;then
-            make_network_ironic2 $EX_ADDR $EX_GW_ADDR $MGMT_ADDR $STORAGE_ADDR $VXLAN_ADDR $REPLICA_ADDR $VLAN_ADDR $NODE
-        elif [ -z ${NODE##*"compute1"*} ] ;then
-            make_network_compute1 $EX_ADDR $EX_GW_ADDR $MGMT_ADDR $STORAGE_ADDR $VXLAN_ADDR $REPLICA_ADDR $VLAN_ADDR $NODE
-        elif [ -z ${NODE##*"compute2"*} ] ;then
-            make_network_compute2 $EX_ADDR $EX_GW_ADDR $MGMT_ADDR $STORAGE_ADDR $VXLAN_ADDR $REPLICA_ADDR $VLAN_ADDR $NODE
-        elif [ -z ${NODE##*"storage1"*} ] ;then
-            make_network_storage1 $EX_ADDR $EX_GW_ADDR $MGMT_ADDR $STORAGE_ADDR $VXLAN_ADDR $REPLICA_ADDR $VLAN_ADDR $NODE
-        elif [ -z ${NODE##*"storage2"*} ] ;then
-            make_network_storage2 $EX_ADDR $EX_GW_ADDR $MGMT_ADDR $STORAGE_ADDR $VXLAN_ADDR $REPLICA_ADDR $VLAN_ADDR $NODE
-        else
-            # unknown server
-            echo "#--------------------------------------------------------------------------------"
-            echo "# UNKNOWN : $NODE  --> skip XXXX "
-        fi
+        LBAAS=$(($LBAAS+1))
     done
-}
 
-function nic-scp-network-config()
-{
-    EX=$EX_NUM
-    MGMT=$MGMT_NUM
-    STORAGE=$STORAGE_NUM
-    VXLAN=$VXLAN_NUM
-    REPLICA=$REPLICA_NUM
+    #
+    # compute
+    # 21 ~
+    #
+
+    MGMT=$((MGMT_NUM+10))
+    STORAGE=$((STORAGE_NUM+10))
+    VXLAN=$((VXLAN_NUM+10))
+    REPLICA=$((REPLICA_NUM+10))
+    VLAN=$((VLAN_NUM+10))
+    LBAAS=$((LBAAS_NUM+10))
 
     for NODE in $VM_LIST
     do
+        if ! [ -z ${NODE##*"compute"*} ] ;then
+            continue
+        fi
+
         EX_ADDR="$EX_PREFIX.$EX/$EX_PREFIX_LEN"
         MGMT_ADDR="$MGMT_PREFIX.$MGMT/$MGMT_PREFIX_LEN"
         STORAGE_ADDR="$STORAGE_PREFIX.$STORAGE/$STORAGE_PREFIX_LEN"
         VXLAN_ADDR="$VXLAN_PREFIX.$VXLAN/$VXLAN_PREFIX_LEN"
         REPLICA_ADDR="$REPLICA_PREFIX.$REPLICA/$REPLICA_PREFIX_LEN"
+        VLAN_ADDR="$VLAN_PREFIX.$VLAN/$VLAN_PREFIX_LEN"
+        LBAAS_ADDR="$LBAAS_PREFIX.$VLAN/$LBAAS_PREFIX_LEN"
+        IPOIB_ADDR="$IPOIB_PREFIX.$VLAN/$IPOIB_PREFIX_LEN"
 
         EX=$(($EX+1))
         MGMT=$(($MGMT+1))
         STORAGE=$(($STORAGE+1))
         VXLAN=$(($VXLAN+1))
         REPLICA=$(($REPLICA+1))
+        VLAN=$(($VLAN+1))
+        LBAAS=$(($LBAAS+1))
 
+
+        echo "#--------------------------------------------------------------------------------"
+        echo "# $NODE"
+        if [ -z ${NODE##*"compute1"*} ] ;then
+            make_network_compute1 $EX_ADDR $EX_GW_ADDR $MGMT_ADDR $STORAGE_ADDR $VXLAN_ADDR $REPLICA_ADDR $VLAN_ADDR $LBAAS_ADDR $IPOIB_ADDR $NODE
+        elif [ -z ${NODE##*"compute2"*} ] ;then
+            make_network_compute2 $EX_ADDR $EX_GW_ADDR $MGMT_ADDR $STORAGE_ADDR $VXLAN_ADDR $REPLICA_ADDR $VLAN_ADDR $LBAAS_ADDR $IPOIB_ADDR $NODE
+        fi
+
+    done
+
+    #
+    # ironic
+    # 41 ~
+    #
+
+    MGMT=$((MGMT_NUM+30))
+    STORAGE=$((STORAGE_NUM+30))
+    VXLAN=$((VXLAN_NUM+30))
+    REPLICA=$((REPLICA_NUM+30))
+    VLAN=$((VLAN_NUM+30))
+    LBAAS=$((LBAAS_NUM+30))
+
+    for NODE in $VM_LIST
+    do
+        if ! [ -z ${NODE##*"ironic"*} ] ;then
+            continue
+        fi
+
+        EX_ADDR="$EX_PREFIX.$EX/$EX_PREFIX_LEN"
+        MGMT_ADDR="$MGMT_PREFIX.$MGMT/$MGMT_PREFIX_LEN"
+        STORAGE_ADDR="$STORAGE_PREFIX.$STORAGE/$STORAGE_PREFIX_LEN"
+        VXLAN_ADDR="$VXLAN_PREFIX.$VXLAN/$VXLAN_PREFIX_LEN"
+        REPLICA_ADDR="$REPLICA_PREFIX.$REPLICA/$REPLICA_PREFIX_LEN"
+        VLAN_ADDR="$VLAN_PREFIX.$VLAN/$VLAN_PREFIX_LEN"
+        LBAAS_ADDR="$LBAAS_PREFIX.$VLAN/$LBAAS_PREFIX_LEN"
+        IPOIB_ADDR="$IPOIB_PREFIX.$VLAN/$IPOIB_PREFIX_LEN"
+
+        EX=$(($EX+1))
+        MGMT=$(($MGMT+1))
+        STORAGE=$(($STORAGE+1))
+        VXLAN=$(($VXLAN+1))
+        REPLICA=$(($REPLICA+1))
+        VLAN=$(($VLAN+1))
+        LBAAS=$(($LBAAS+1))
+
+        echo "#--------------------------------------------------------------------------------"
+        echo "# $NODE"
+        if [ -z ${NODE##*"ironic1"*} ] ;then
+            make_network_ironic1 $EX_ADDR $EX_GW_ADDR $MGMT_ADDR $STORAGE_ADDR $VXLAN_ADDR $REPLICA_ADDR $VLAN_ADDR $LBAAS_ADDR $IPOIB_ADDR $NODE
+        elif [ -z ${NODE##*"ironic2"*} ] ;then
+            make_network_ironic2 $EX_ADDR $EX_GW_ADDR $MGMT_ADDR $STORAGE_ADDR $VXLAN_ADDR $REPLICA_ADDR $VLAN_ADDR $LBAAS_ADDR $IPOIB_ADDR $NODE
+        fi
+
+
+    done
+
+    #
+    # storage
+    # 51 ~
+    #
+
+    MGMT=$((MGMT_NUM+40))
+    STORAGE=$((STORAGE_NUM+40))
+    VXLAN=$((VXLAN_NUM+40))
+    REPLICA=$((REPLICA_NUM+40))
+    VLAN=$((VLAN_NUM+40))
+    LBAAS=$((LBAAS_NUM+40))
+
+    for NODE in $VM_LIST
+    do
+        if ! [ -z ${NODE##*"storage"*} ] ;then
+            continue
+        fi
+
+        EX_ADDR="$EX_PREFIX.$EX/$EX_PREFIX_LEN"
+        MGMT_ADDR="$MGMT_PREFIX.$MGMT/$MGMT_PREFIX_LEN"
+        STORAGE_ADDR="$STORAGE_PREFIX.$STORAGE/$STORAGE_PREFIX_LEN"
+        VXLAN_ADDR="$VXLAN_PREFIX.$VXLAN/$VXLAN_PREFIX_LEN"
+        REPLICA_ADDR="$REPLICA_PREFIX.$REPLICA/$REPLICA_PREFIX_LEN"
+        VLAN_ADDR="$VLAN_PREFIX.$VLAN/$VLAN_PREFIX_LEN"
+        LBAAS_ADDR="$LBAAS_PREFIX.$VLAN/$LBAAS_PREFIX_LEN"
+        IPOIB_ADDR="$IPOIB_PREFIX.$VLAN/$IPOIB_PREFIX_LEN"
+
+        EX=$(($EX+1))
+        MGMT=$(($MGMT+1))
+        STORAGE=$(($STORAGE+1))
+        VXLAN=$(($VXLAN+1))
+        REPLICA=$(($REPLICA+1))
+        VLAN=$(($VLAN+1))
+        LBAAS=$(($LBAAS+1))
+
+        echo "#--------------------------------------------------------------------------------"
+        echo "# $NODE"
+        if [ -z ${NODE##*"storage1"*} ] ;then
+            make_network_storage1 $EX_ADDR $EX_GW_ADDR $MGMT_ADDR $STORAGE_ADDR $VXLAN_ADDR $REPLICA_ADDR $VLAN_ADDR $LBAAS_ADDR $IPOIB_ADDR $NODE
+        elif [ -z ${NODE##*"storage2"*} ] ;then
+            make_network_storage2 $EX_ADDR $EX_GW_ADDR $MGMT_ADDR $STORAGE_ADDR $VXLAN_ADDR $REPLICA_ADDR $VLAN_ADDR $LBAAS_ADDR $IPOIB_ADDR $NODE
+        fi
+    done
+}
+
+function nic-scp-network-config()
+{
+    for NODE in $VM_LIST
+    do
         echo "#--------------------------------------------------------------------------------"
         if [ -f output/$NODE.net.conf ] ; then
             echo "# sshpass scp -o StrictHostKeyChecking=no $NODE.net.conf $RUSER@$NODE:$RHOME"
@@ -194,29 +314,75 @@ function nic-apply-network-config()
 
 function nic-get-ip-address()
 {
-    EX=$EX_NUM
+    # controller
     MGMT=$MGMT_NUM
-    STORAGE=$STORAGE_NUM
-    VXLAN=$VXLAN_NUM
-    REPLICA=$REPLICA_NUM
-
     for NODE in $VM_LIST
     do
-        EX_ADDR="$EX_PREFIX.$EX/$EX_PREFIX_LEN"
+        if ! [ -z ${NODE##*"controller"*} ] ;then
+            continue
+        fi
         MGMT_ADDR="$MGMT_PREFIX.$MGMT/$MGMT_PREFIX_LEN"
-        STORAGE_ADDR="$STORAGE_PREFIX.$STORAGE/$STORAGE_PREFIX_LEN"
-        VXLAN_ADDR="$VXLAN_PREFIX.$VXLAN/$VXLAN_PREFIX_LEN"
-        REPLICA_ADDR="$REPLICA_PREFIX.$REPLICA/$REPLICA_PREFIX_LEN"
-
         ADDR=$MGMT_ADDR
         echo "$ADDR $NODE"
-
-        EX=$(($EX+1))
         MGMT=$(($MGMT+1))
-        STORAGE=$(($STORAGE+1))
-        VXLAN=$(($VXLAN+1))
-        REPLICA=$(($REPLICA+1))
     done
+
+    # compute
+    MGMT=$((MGMT_NUM+10))
+    for NODE in $VM_LIST
+    do
+        if ! [ -z ${NODE##*"compute"*} ] ;then
+            continue
+        fi
+        MGMT_ADDR="$MGMT_PREFIX.$MGMT/$MGMT_PREFIX_LEN"
+        ADDR=$MGMT_ADDR
+        echo "$ADDR $NODE"
+        MGMT=$(($MGMT+1))
+    done
+
+    # ironic
+    MGMT=$((MGMT_NUM+30))
+    for NODE in $VM_LIST
+    do
+        if ! [ -z ${NODE##*"ironic"*} ] ;then
+            continue
+        fi
+        MGMT_ADDR="$MGMT_PREFIX.$MGMT/$MGMT_PREFIX_LEN"
+        ADDR=$MGMT_ADDR
+        echo "$ADDR $NODE"
+        MGMT=$(($MGMT+1))
+    done
+
+    # storage
+    MGMT=$((MGMT_NUM+40))
+    for NODE in $VM_LIST
+    do
+        if ! [ -z ${NODE##*"storage"*} ] ;then
+            continue
+        fi
+        MGMT_ADDR="$MGMT_PREFIX.$MGMT/$MGMT_PREFIX_LEN"
+        ADDR=$MGMT_ADDR
+        echo "$ADDR $NODE"
+        MGMT=$(($MGMT+1))
+    done
+
+}
+
+function os-target-apt()
+{
+    nic-ssh "apt update && apt dist-upgrade -y"
+}
+
+function os-target-pkg()
+{
+    ARGS="apt install bridge-utils debootstrap ifenslave ifenslave-2.6 lsof lvm2 chrony openssh-server sudo tcpdump vlan python3 -y"
+    nic-ssh "$ARGS"
+    ARGS="echo 'bonding' >> /etc/modules"
+    nic-ssh "$ARGS"
+    ARGS="echo '8021q' >> /etc/modules"
+    nic-ssh "$ARGS"
+    ARGS="service chrony restart"
+    nic-ssh "$ARGS"
 }
 
 function nic-help()
@@ -242,6 +408,12 @@ function nic-help()
     echo "      $N) nic-ssh ARGS"
     N=$(($N+1))
     echo "      $N) nic-scp ARGS"
+    N=$(($N+1))
+    echo "      $N) nic-clear-ssh-keygen"
+    N=$(($N+1))
+    echo "      $N) os-target-apt"
+    N=$(($N+1))
+    echo "      $N) os-target-pkg"
     echo ''
 
 }

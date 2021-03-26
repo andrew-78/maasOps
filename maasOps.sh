@@ -26,6 +26,7 @@ fi
 source ./lib/maas-lib
 source ./lib/utils-lib
 source ./lib/infiniband-lib
+source ./lib/kernel-lib
 
 function maas-usage() {
 	N=1
@@ -40,6 +41,15 @@ function maas-usage() {
 	echo "      $N) maas-list"
 	N=$(($N+1))
 	echo "      $N) maas-nodes"
+	echo ""
+	echo "    Kernel: "
+	echo ""
+	N=$(($N+1))
+	echo "      $N) maas-kernel-install-old"
+	N=$(($N+1))
+	echo "      $N) maas-kernel-change-default-grub"
+	N=$(($N+1))
+	echo "      $N) maas-init-env"
 	echo ""
 	echo "    InfiniBand: "
 	N=$(($N+1))
@@ -58,6 +68,14 @@ function maas-usage() {
 	echo "    Utils: "
 	N=$(($N+1))
 	echo "      $N) maas-show"
+	N=$(($N+1))
+	echo "      $N) maas-show-refresh"
+	N=$(($N+1))
+	echo "      $N) maas-ip-vars"
+	N=$(($N+1))
+	echo "      $N) maas-show-hostname"
+	N=$(($N+1))
+	echo "      $N) maas-delete-proxy-apt"
 	N=$(($N+1))
 	echo "      $N) maas-ssh ARGS"
 	N=$(($N+1))

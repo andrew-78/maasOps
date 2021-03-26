@@ -1,0 +1,5 @@
+auto br-provider0
+allow-ovs br-provider0
+iface br-provider0 inet manual
+        ovs_type OVSBridge
+        ovs_ports br-dummy0

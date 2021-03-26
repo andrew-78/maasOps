@@ -22,6 +22,21 @@ function check-maas-store() {
 	fi
 }
 
+function maas-change-ssh-config() {
+
+    # change /etc/ssh/sshd_config
+    maas-ssh ""
+    # mv /etc/ssh/sshd_config
+    maas-ssh ""
+    # apply
+    maas-ssh "sudo systemctl restart sshd"
+
+}
+
+function maas-delete-proxy-apt() {
+    maas-ssh "if [ -f /etc/apt/apt.conf.d/90curtin-aptproxy ]; then sudo rm -f /etc/apt/apt.conf.d/90curtin-aptproxy fi"
+}
+
 function maas-show-hostname() {
 
 	check-maas-store
@@ -33,9 +48,31 @@ function maas-show-hostname() {
 	done
 }
 
+function maas-ip-vars() {
+
+	check-maas-store
+
+	for line in $(cat $MAAS_STORE |grep ' on ' | awk '{ print $1 ","$4 }') ; do 
+		line=$(echo $line | awk -F ',' '{print $1" "$2}')
+		read -r NODE ADDR <<<$(echo $line)
+		echo "$NODE=$ADDR"  
+	done
+}
+
 function maas-show() {
 
 	check-maas-store
+
+	for line in $(cat $MAAS_STORE |grep ' on ' | awk '{ print $1 ","$4 }') ; do 
+		line=$(echo $line | awk -F ',' '{print $1" "$2}')
+		read -r NODE ADDR <<<$(echo $line)
+		echo "$ADDR $NODE"  
+	done
+}
+
+function maas-show-refresh() {
+
+	maas-store
 
 	for line in $(cat $MAAS_STORE |grep ' on ' | awk '{ print $1 ","$4 }') ; do 
 		line=$(echo $line | awk -F ',' '{print $1" "$2}')
@@ -73,9 +110,15 @@ function maas-scp() {
 }
 
 function maas-clear-ssh-keygen() {
-	for ADDR in $(cat $MAAS_STORE |grep ' on ' | awk '{ print $4 }')
+
+	check-maas-store
+
+	for line in $(cat $MAAS_STORE |grep ' on ' | awk '{ print $1 ","$4 }') ; 
 	do
+		line=$(echo $line | awk -F ',' '{print $1" "$2}')
+		read -r NODE ADDR <<<$(echo $line)
 		echo "#-----------------------------------------------------------------------------------"
+		echo "$NODE: $ADDR" 
 		echo "# ssh-keygen -f \"/$HOME/.ssh/known_hosts\" -R \"$ADDR\""
 		ssh-keygen -f "$HOME/.ssh/known_hosts" -R "$ADDR"
 		echo "# ssh-keygen -f "$HOME/.ssh/known_hosts" -R "$NODE""

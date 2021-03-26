@@ -50,3 +50,56 @@ function maas-ib-devinfo() {
 	maas-ssh "sudo ibv_devinfo"
 }
 
+NVIDIA_CUDA=cuda_11.0.2_450.51.05_linux.run
+NVIDIA_GPU_DIRECT=gpudirect-storage-local-repo-ubuntu2004-cuda-11.0-0.9.1_0.9.1-1_amd64.deb 
+function maas-nvidia-copy-driver() {
+
+
+	if ! [ -f $OUTPUT/$NVIDIA_CUDA ]; then 
+        echo "wget http://180.210.14.253/ds-download/$NVDIA_CUDA -O $OUTPUT/$NVDIA_CUDA"
+        wget http://180.210.14.253/ds-download/$NVDIA_CUDA -O $OUTPUT/$NVDIA_CUDA
+    fi
+
+	if ! [ -f $OUTPUT/$NVIDIA_GPU_DIRECT ]; then 
+        echo "wget http://180.210.14.253/ds-download/$NVIDIA_GPU_DIRECT -O $OUTPUT/$NVIDIA_GPU_DIRECT"
+        wget http://180.210.14.253/ds-download/$NVIDIA_GPU_DIRECT -O $OUTPUT/$NVIDIA_GPU_DIRECT
+    fi
+
+	check-maas-store
+
+	for line in $(cat $MAAS_STORE |grep ' on ' | awk '{ print $1 ","$4 }') ; do 
+		line=$(echo $line | awk -F ',' '{print $1" "$2}')
+		read -r NODE ADDR <<<$(echo $line)
+
+		echo "#-----------------------------------------------------------------------------------"
+		echo "# $NODE: $ADDR" 
+        if [ -z ${NODE##*"deploy"*} ] ;then
+		    echo "--> skip" 
+            continue
+        fi
+        if [ -z ${NODE##*"controller"*} ] ;then
+		    echo "--> skip" 
+            continue
+        fi
+        if [ -z ${NODE##*"storage"*} ] ;then
+		    echo "--> skip" 
+            continue
+        fi
+        if [ -z ${NODE##*"ceph"*} ] ;then
+		    echo "--> skip" 
+            continue
+        fi
+	    if [ -f $OUTPUT/$NVIDIA_CUDA ]; then 
+	        ARGS=$OUTPUT/$NVIDIA_CUDA
+		    echo "sshpass scp -o StrictHostKeyChecking=no $ARGS ubuntu@$ADDR:"
+		    sshpass scp -o StrictHostKeyChecking=no $ARGS ubuntu@$ADDR:
+        fi
+	    if [ -f $OUTPUT/$NVIDIA_GPU_DIRECT ]; then 
+	        ARGS=$OUTPUT/$NVIDIA_GPU_DIRECT
+		    echo "sshpass scp -o StrictHostKeyChecking=no $ARGS ubuntu@$ADDR:"
+		    sshpass scp -o StrictHostKeyChecking=no $ARGS ubuntu@$ADDR:
+        fi
+    done 
+}
+
+

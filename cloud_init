@@ -1,0 +1,52 @@
+#cloud-config
+#
+# https://cloudinit.readthedocs.io/en/latest/topics/examples.html
+#
+# PUB_KEY=`cat ~/.ssh/id_rsa.pub`
+# ENCRYPT_PASSWD=`mkpasswd --method=des $N2USER_PW`
+# passwd: devSTACK1!
+users:
+  - name: devstack
+    lock_passwd: false
+    passwd: himt7ZyrMjVzg
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    groups: sudo
+    shell: /bin/bash
+  - name: ubuntu
+    ssh-authorized-keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCoY5nydbpVn1Yi9RzKOSWaolFXDzf6f5xKX8FZvHTVa0VkwutaVY1Uc8A3BTbOqpkrUPldg9UezanpKdkQ0JPRQ6fY2l7gm1elTCsNN+0GuLWfmUFaM/aVkuwAY2nA3J1Au+GQ9/v5XN3Yd9OmVMBTcFlIvYWOmlGk6g6Uyoiykdd7L7K+ZJ7Iux9UnV/tXh+1f1kvYEfJhm+DNlIiY4WLioSes54d933fv89TGdwz8FYumWZ4U5gg4B0rochVOWY50EUfrvdS0igpG7ZKyYGEgis1yriXhCpzygZqa5LZMIsVruDMZzwzEYmAbKNmk5M3K13OucVNr7wS38SFyr6oIIn+kcaRqahNdvfCZ0K9d6muAK+Ha8XzxiD5lLpq6SqyEPlrS/BCcMY59JyF36kSkBT8JhmMS0/Z/hsl4lx19l36Ig0FhcydNn8LAOxEgjSFNED0LYk/hrXVqi9I5fBIidEsRnV5aUZsriu3s9wlxSq27OM72GQUSC0zepd1Nxc= dev@u20maas-1
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDB9RFNP/sqJc0W46DKEQzbHSp0dw5DUAhPAxlx9Jp3AxxflBv2B+12Z9EhJvtGiX8toKk9mNUUixtwmxnlYj9RFp3qL9SS69i+V5AyQQuPctXOWJDW6Gr0Wx56A5jnKvfOScZsIGIlHLKoG4bTo+bpA8hkkrhIb/ix+8+XnjaQrNoUyN3X6k+FlqVOro9q9e3WMDuUKxL0CoZjmP0LDqE1E8O+b07OgPoek6Lgz+TIgfo1Qm2GgAHtzOIAwhqtDVGOuREaYG1fdX5P04cy60KK3ARyZsy6Ez+Ibc/Gf4YGwrX/O6DI2R/x1XVEg4bhcHu10XaULgsOxIP4ep/SC5P+1GmDLMvlpV4OYVze6osMxbYetw34SJZyJrhBOASN2cwnF9JsVls+K9LSAvgb9cALfuu+exwVYMj6xtS1vd2t0WtcAk1Ad/+uzJFI0EELWo1LmWbF/xszY8i+X34YWwl4BCEmBM2b/o+HlCZwkS0WMZZUGoJtnzzYPz2lzR2KKGk= root@ps-deploy
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    groups: sudo
+    shell: /bin/bash
+
+# run commands
+# default: none
+runcmd:
+ #- [ ls, -l, / ]
+ #- [ sh, -xc, "echo $(date) ': hello world!'" ]
+ #- [ sh, -c, echo "=========hello world'=========" ]
+ #- ls -l /root
+ # Note: Don't write files to /tmp from cloud-init use /run/somedir instead.
+ # Early boot environments can race systemd-tmpfiles-clean LP: #1707222.
+ #- mkdir /run/mydir
+ #- [ wget, "http://slashdot.org", -O, /run/mydir/index.html ]
+
+# packages may be supplied as a single package name or as a list
+# with the format [<package>, <version>] wherein the specifc
+# package version will be installed.
+packages:
+ - vim
+ - git
+ - wget
+ - tree
+ - net-tools
+ - bridge-utils
+
+# Update apt database on first boot (run 'apt-get update').
+package_update: true
+
+# Upgrade the instance on first boot
+package_upgrade: true
+
+

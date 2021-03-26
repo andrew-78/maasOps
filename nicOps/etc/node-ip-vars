@@ -1,0 +1,8 @@
+compute1=10.2.0.248
+compute2=10.2.0.222
+controller1=10.2.0.237
+controller2=10.2.0.253
+controller3=10.2.0.227
+ironic1=10.2.0.203
+storage1=10.2.0.231
+storage2=10.2.0.221

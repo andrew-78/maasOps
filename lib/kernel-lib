@@ -1,0 +1,44 @@
+#!/bin/bash
+
+function maas-kernel-install-old() {
+	echo ""
+	echo "Kernel: Install 5.4.0-26-generic"
+	echo ""
+    maas-ssh "sudo apt install -y aptitude"
+
+    # Install image
+    maas-ssh "sudo aptitude install -y linux-image-5.4.0-26-generic"
+
+    # Remove header package
+    maas-ssh "sudo apt purge -y linux-headers-5.4.0-70 linux-headers-5.4.0-70-generic linux-headers-generic"
+
+    # Install header package
+    maas-ssh "sudo apt install -y linux-headers-5.4.0-26-generic linux-modules-5.4.0-26-generic linux-modules-extra-5.4.0-26-generic"
+}
+
+function maas-kernel-change-default-grub() {
+	echo ""
+	echo "Kernel: copy change_grub.sh"
+	echo ""
+    maas-scp lib/change_grub.sh
+	echo ""
+	echo "Kernel: change grub configuration"
+	echo ""
+    maas-ssh "source change_grub.sh"
+	echo ""
+	echo "Kernel: apply grub configuration"
+	echo ""
+    maas-ssh "sudo update-grub"
+	echo ""
+	echo "Kernel: reboot"
+	echo ""
+    maas-ssh "sudo reboot"
+}
+
+function maas-init-env() {
+    maas-ssh "sudo apt-mark hold linux-image-generic linux-headers-generic"
+    maas-ssh "sudo timedatectl set-timezone Asia/Seoul"
+    maas-ssh "sudo systemctl disable systemd-networkd-wait-online.service"
+    maas-ssh "sudo systemctl mask systemd-networkd-wait-online.service"
+    #maas-ssh "ssh-keygen"
+}
