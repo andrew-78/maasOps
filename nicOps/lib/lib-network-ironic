@@ -167,7 +167,6 @@ network:
                 - 10.2.0.12
                 search:
                 - maas
-            set-name: eno1
         eno2: {}
         eno3: {}
         eno4: {}

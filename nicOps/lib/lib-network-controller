@@ -297,8 +297,8 @@ network:
         eno2: {}
         eno3: {}
         eno4: {}
-        enp129s0f0: {]
-        enp129s0f1: {]
+        enp129s0f0: {}
+        enp129s0f1: {}
         ibp3s0f0: {}
         ibp3s0f1: {}
         br-dummy0: {}
