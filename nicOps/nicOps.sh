@@ -279,6 +279,18 @@ function nic-scp-network-config()
             sshpass scp -o StrictHostKeyChecking=no etc/br-dummy0.cfg $RUSER@$NODE:$RHOME
             echo "# sshpass scp -o StrictHostKeyChecking=no etc/br-dummy1.cfg $RUSER@$NODE:$RHOME"
             sshpass scp -o StrictHostKeyChecking=no etc/br-dummy1.cfg $RUSER@$NODE:$RHOME
+            echo "# sshpass scp -o StrictHostKeyChecking=no etc/br-dummy2.cfg $RUSER@$NODE:$RHOME"
+            sshpass scp -o StrictHostKeyChecking=no etc/br-dummy2.cfg $RUSER@$NODE:$RHOME
+
+            filename=ifcfg-br-provider0
+            echo "# sshpass scp -o StrictHostKeyChecking=no etc/$filename $RUSER@$NODE:$RHOME"
+            sshpass scp -o StrictHostKeyChecking=no etc/$filename $RUSER@$NODE:$RHOME
+            filename=ifcfg-br-provider1
+            echo "# sshpass scp -o StrictHostKeyChecking=no etc/$filename $RUSER@$NODE:$RHOME"
+            sshpass scp -o StrictHostKeyChecking=no etc/$filename $RUSER@$NODE:$RHOME
+            filename=ifcfg-br-lbaas
+            echo "# sshpass scp -o StrictHostKeyChecking=no etc/$filename $RUSER@$NODE:$RHOME"
+            sshpass scp -o StrictHostKeyChecking=no etc/$filename $RUSER@$NODE:$RHOME
         else
             echo "WARN: output/$Node.net.conf dosen't exist!"
         fi
@@ -299,6 +311,18 @@ function nic-mv-network-config()
         sshpass ssh -o StrictHostKeyChecking=no $RUSER@$NODE cp br-dummy0.cfg /etc/network/interfaces.d/
         echo "# sshpass ssh -o StrictHostKeyChecking=no $RUSER@$NODE cp br-dummy1.cfg /etc/network/interfaces.d/"
         sshpass ssh -o StrictHostKeyChecking=no $RUSER@$NODE cp br-dummy1.cfg /etc/network/interfaces.d/
+        echo "# sshpass ssh -o StrictHostKeyChecking=no $RUSER@$NODE cp br-dummy2.cfg /etc/network/interfaces.d/"
+        sshpass ssh -o StrictHostKeyChecking=no $RUSER@$NODE cp br-dummy2.cfg /etc/network/interfaces.d/
+
+        filename=ifcfg-br-provider0
+        echo "# sshpass ssh -o StrictHostKeyChecking=no $RUSER@$NODE cp $filename /etc/network/interfaces.d/"
+        sshpass ssh -o StrictHostKeyChecking=no $RUSER@$NODE cp $filename /etc/network/interfaces.d/
+        filename=ifcfg-br-provider1
+        echo "# sshpass ssh -o StrictHostKeyChecking=no $RUSER@$NODE cp $filename /etc/network/interfaces.d/"
+        sshpass ssh -o StrictHostKeyChecking=no $RUSER@$NODE cp $filename /etc/network/interfaces.d/
+        filename=ifcfg-br-lbaas
+        echo "# sshpass ssh -o StrictHostKeyChecking=no $RUSER@$NODE cp $filename /etc/network/interfaces.d/"
+        sshpass ssh -o StrictHostKeyChecking=no $RUSER@$NODE cp $filename /etc/network/interfaces.d/
     done
 }
 

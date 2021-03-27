@@ -1,0 +1,5 @@
+auto br-lbaas
+allow-ovs br-lbaas
+iface br-lbaas inet manual
+        ovs_type OVSBridge
+        ovs_ports br-dummy2
