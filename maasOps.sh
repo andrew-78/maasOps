@@ -38,12 +38,13 @@ function maas-usage() {
 	N=$(($N+1))
 	echo "      $N) maas-ip"
 	N=$(($N+1))
+	echo "      $N) maas-ip-summary"
+	N=$(($N+1))
 	echo "      $N) maas-list"
 	N=$(($N+1))
 	echo "      $N) maas-nodes"
 	echo ""
 	echo "    Kernel: "
-	echo ""
 	N=$(($N+1))
 	echo "      $N) maas-kernel-install-old"
 	N=$(($N+1))
@@ -64,6 +65,10 @@ function maas-usage() {
 	echo "      $N) maas-ib-restart-openibd"
 	N=$(($N+1))
 	echo "      $N) maas-ib-devinfo"
+	echo ""
+	echo "    Deploy: "
+	N=$(($N+1))
+	echo "      $N) maas-copy-deploy-ssh-authkey-into-root"
 	echo ""
 	echo "    Utils: "
 	N=$(($N+1))

@@ -73,6 +73,7 @@ function maas-show() {
 function maas-show-refresh() {
 
 	maas-store
+    echo "$MAAS_STORE"
 
 	for line in $(cat $MAAS_STORE |grep ' on ' | awk '{ print $1 ","$4 }') ; do 
 		line=$(echo $line | awk -F ',' '{print $1" "$2}')

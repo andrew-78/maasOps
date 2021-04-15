@@ -34,6 +34,21 @@ function maas-nodes() {
 	sudo maas $PROFILE nodes read
 }
 
+function maas-ip-summary() {
+	sudo maas $PROFILE machines read | jq -r '(["HOSTNAME",
+	"POWER",
+	"STATUS",
+	"ADDRESS"
+	] | (., map(length*"-"))),
+	(.[] | [.hostname, 
+	.power_state, 
+	.status_name, 
+	.boot_interface.links[0].ip_address
+	]) | @tsv' | column -t \
+	| sort -k 1 > output/tmp
+    cat output/tmp |grep Deployed | awk '{printf "%s %s\n", $4, $1}'
+}
+
 function maas-ip() {
 	sudo maas $PROFILE machines read | jq -r '(["HOSTNAME",
 	"POWER",
@@ -45,7 +60,7 @@ function maas-ip() {
 	.status_name, 
 	.boot_interface.links[0].ip_address
 	]) | @tsv' | column -t \
-	| sort -k 1
+	| sort -k 1 
 }
 
 function maas-list() {
