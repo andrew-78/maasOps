@@ -1,0 +1,30 @@
+---
+- name: Target nodes, install old kernel
+  hosts: targets
+  remote_user: root
+  become: yes
+
+  tasks:
+    - name: install aptitude package
+      apt:
+        pkg:
+          - aptitude
+
+    - name: install 5.4.0-26 kernel images
+      shell:
+        - sudo aptitude install -y linux-image-5.4.0-26-generic
+
+    - name: remove 5.4.0-70 kernel package
+      apt:
+        pkg:
+          - linux-headers-5.4.0-70
+          - linux-headers-5.4.0-70-generic
+          - linux-headers-generic
+
+    - name: install 5.4.0-26 kernel pakcages
+      apt:
+        pkg:
+          - linux-headers-5.4.0-26-generic
+          - linux-modules-5.4.0-26-generic
+          - linux-modules-extra-5.4.0-26-generic
+...

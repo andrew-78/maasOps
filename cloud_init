@@ -14,7 +14,7 @@ users:
     shell: /bin/bash
   - name: ubuntu
     ssh-authorized-keys:
-      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCoY5nydbpVn1Yi9RzKOSWaolFXDzf6f5xKX8FZvHTVa0VkwutaVY1Uc8A3BTbOqpkrUPldg9UezanpKdkQ0JPRQ6fY2l7gm1elTCsNN+0GuLWfmUFaM/aVkuwAY2nA3J1Au+GQ9/v5XN3Yd9OmVMBTcFlIvYWOmlGk6g6Uyoiykdd7L7K+ZJ7Iux9UnV/tXh+1f1kvYEfJhm+DNlIiY4WLioSes54d933fv89TGdwz8FYumWZ4U5gg4B0rochVOWY50EUfrvdS0igpG7ZKyYGEgis1yriXhCpzygZqa5LZMIsVruDMZzwzEYmAbKNmk5M3K13OucVNr7wS38SFyr6oIIn+kcaRqahNdvfCZ0K9d6muAK+Ha8XzxiD5lLpq6SqyEPlrS/BCcMY59JyF36kSkBT8JhmMS0/Z/hsl4lx19l36Ig0FhcydNn8LAOxEgjSFNED0LYk/hrXVqi9I5fBIidEsRnV5aUZsriu3s9wlxSq27OM72GQUSC0zepd1Nxc= dev@u20maas-1
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC/qKeWctlEXi4miCTfbs0YLT0UsJXWsV0MIcEknbwHKqSM40k7xVvtkk2kFn6+w1wHHP0IpAP5f3YkK58vlf8ENgVlFr52koOJZHHm1wCG0damZxvRHyEyXoqT1nGBGOXsGVfptXgCjECgiLTWjahdaLa50jFu9jNpvBzl25bwRC/1ucg1DT9hEF6EMX5Vg5FxYrk7K1YLwz5+awsL36GLpYJ5u3shyXLwgMy4clEoQuXaqdFJd5owhAco37kNuZUBonkd1D/a+GeVCiytHLcLsXcU0ZaGUQ200C5aKnZngfw3DlFcMzswNGuS6GPg5w2J3rsVYgAz7XRSvtfYKUoJqoTRz4TaOIW6hjQdrQ5t6Nis121vll2TYc2ZTMWVWWH2vpA5zNXvvlRqFwfbMmXCIPd3gWdY/t0pv3t2H3B74Yjt/BxDlwq+z6lVfBdcjtWMXQX4gR9BoKh6Nx1OSBuiyWFdyvAsmcW/5KxOW/0MpOY94yzzsmONf8aBeksqT1s= root@ps-maas
       - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDB9RFNP/sqJc0W46DKEQzbHSp0dw5DUAhPAxlx9Jp3AxxflBv2B+12Z9EhJvtGiX8toKk9mNUUixtwmxnlYj9RFp3qL9SS69i+V5AyQQuPctXOWJDW6Gr0Wx56A5jnKvfOScZsIGIlHLKoG4bTo+bpA8hkkrhIb/ix+8+XnjaQrNoUyN3X6k+FlqVOro9q9e3WMDuUKxL0CoZjmP0LDqE1E8O+b07OgPoek6Lgz+TIgfo1Qm2GgAHtzOIAwhqtDVGOuREaYG1fdX5P04cy60KK3ARyZsy6Ez+Ibc/Gf4YGwrX/O6DI2R/x1XVEg4bhcHu10XaULgsOxIP4ep/SC5P+1GmDLMvlpV4OYVze6osMxbYetw34SJZyJrhBOASN2cwnF9JsVls+K9LSAvgb9cALfuu+exwVYMj6xtS1vd2t0WtcAk1Ad/+uzJFI0EELWo1LmWbF/xszY8i+X34YWwl4BCEmBM2b/o+HlCZwkS0WMZZUGoJtnzzYPz2lzR2KKGk= root@ps-deploy
     sudo: ['ALL=(ALL) NOPASSWD:ALL']
     groups: sudo
@@ -42,6 +42,17 @@ packages:
  - tree
  - net-tools
  - bridge-utils
+ - debootstrap 
+ - ifenslave 
+ - ifenslave-2.6 
+ - lsof 
+ - lvm2 
+ - chrony 
+ - openssh-server 
+ - sudo 
+ - tcpdump 
+ - vlan 
+ - python3
 
 # Update apt database on first boot (run 'apt-get update').
 package_update: true

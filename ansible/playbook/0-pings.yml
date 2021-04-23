@@ -1,0 +1,6 @@
+---
+- name: Target Nodes, Ping
+  hosts: targets
+  tasks:
+    - action: ping
+...
