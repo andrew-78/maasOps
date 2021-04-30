@@ -17,7 +17,8 @@ function maas-kernel-install-old() {
 }
 
 function maas-kernel-uninstall() {
-    maas-ssh "sudo apt purge -y linux-headers-5.4.0-72 linux-headers-5.4.0-72-generic linux-modules-5.4.0-72-generic linux-modules-extra-5.4.0-72-generic linux-headers-generic"
+    #maas-ssh "sudo apt purge -y linux-headers-5.4.0-72 linux-headers-5.4.0-72-generic linux-modules-5.4.0-72-generic linux-modules-extra-5.4.0-72-generic linux-headers-generic"
+    maas-ssh "sudo apt purge -y linux-headers-5.4.0-72 linux-headers-5.4.0-72-generic linux-modules-extra-5.4.0-72-generic linux-headers-generic"
 }
 
 function maas-kernel-change-default-grub() {

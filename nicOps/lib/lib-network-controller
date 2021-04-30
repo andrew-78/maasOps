@@ -50,6 +50,9 @@ network:
                 mode: 802.3ad
                 mii-monitor-interval: 1
     vlans:
+        vlan3:
+            id: 3
+            link: eno2
         vlan101:
             id: 101
             link: bond0
@@ -59,53 +62,49 @@ network:
         vlan103:
             id: 103
             link: bond0
-        vlan104:
-            id: 104
-            link: bond0
-        vlan105:
-            id: 105
-            link: bond0
     bridges:
         br-public:
             interfaces: [eno2, br-ovs-vp0]
             addresses: [${EX_ADDR}]
+            gateway4: ${EX_GW_ADDR}
             nameservers:
                 addresses: [8.8.8.8]
-            routes:
-                - to: 0.0.0.0/0
-                  via: ${EX_GW_ADDR}
-                  metric: 10
-            #mtu: 1500
+            mtu: 1500
             dhcp4: no
             dhcp6: no
         br-mgmt:
             interfaces: [${VLAN_MGMT}]
             addresses: [${MGMT_ADDR}]
-            #mtu: ${FIBER_MTU}
+            mtu: ${FIBER_MTU}
+            dhcp4: no
+            dhcp6: no
+        br-ipmi:
+            interfaces: [vlan3]
+            addresses: [10.3.1.101/24]
+            mtu: 1500
             dhcp4: no
             dhcp6: no
         br-vxlan:
             interfaces: [${VLAN_VXLAN}]
             addresses: [${VXLAN_ADDR}]
-            #mtu: ${FIBER_MTU}
+            mtu: ${FIBER_MTU}
             dhcp4: no
             dhcp6: no
         br-vlan:
             interfaces: [bond0, br-ovs-vp1]
-            addresses: [${VLAN_ADDR}]
-            #mtu: ${FIBER_MTU}
+            mtu: ${FIBER_MTU}
             dhcp4: no
             dhcp6: no
         br-lbaas:
             interfaces: [${VLAN_LBAAS}, br-ovs-vp2]
             addresses: [${LBAAS_ADDR}]
-            #mtu: 1500
+            mtu: 1500
             dhcp4: no
             dhcp6: no
         br-baremetal:
             interfaces: [eno4]
             addresses: [10.20.3.11/24]
-            #mtu: 1500
+            mtu: 1500
             dhcp4: no
             dhcp6: no
     version: 2
@@ -150,7 +149,7 @@ network:
                 - 10.2.0.12
                 search:
                 - maas
-            #mtu: 1500
+            mtu: 1500
         eno2: {}
         eno3: {}
         eno4: {}
@@ -171,6 +170,9 @@ network:
                 mode: 802.3ad
                 mii-monitor-interval: 1
     vlans:
+        vlan3:
+            id: 3
+            link: eno2
         vlan101:
             id: 101
             link: bond0
@@ -180,53 +182,49 @@ network:
         vlan103:
             id: 103
             link: bond0
-        vlan104:
-            id: 104
-            link: bond0
-        vlan105:
-            id: 105
-            link: bond0
     bridges:
         br-public:
             interfaces: [eno2, br-ovs-vp0]
             addresses: [${EX_ADDR}]
-            #mtu: 1500
+            gateway4: ${EX_GW_ADDR}
             nameservers:
                 addresses: [8.8.8.8]
-            routes:
-                - to: 0.0.0.0/0
-                  via: ${EX_GW_ADDR}
-                  metric: 10
+            mtu: 1500
+            dhcp4: no
+            dhcp6: no
+        br-ipmi:
+            interfaces: [vlan3]
+            addresses: [10.3.1.102/24]
+            mtu: 1500
             dhcp4: no
             dhcp6: no
         br-mgmt:
             interfaces: [${VLAN_MGMT}]
             addresses: [${MGMT_ADDR}]
-            #mtu: ${FIBER_MTU}
+            mtu: ${FIBER_MTU}
             dhcp4: no
             dhcp6: no
         br-vxlan:
             interfaces: [${VLAN_VXLAN}]
             addresses: [${VXLAN_ADDR}]
-            #mtu: ${FIBER_MTU}
+            mtu: ${FIBER_MTU}
             dhcp4: no
             dhcp6: no
         br-vlan:
             interfaces: [bond0, br-ovs-vp1]
-            addresses: [${VLAN_ADDR}]
-            #mtu: ${FIBER_MTU}
+            mtu: ${FIBER_MTU}
             dhcp4: no
             dhcp6: no
         br-lbaas:
             interfaces: [${VLAN_LBAAS}, br-ovs-vp2]
             addresses: [${LBAAS_ADDR}]
-            #mtu: 1500
+            mtu: 1500
             dhcp4: no
             dhcp6: no
         br-baremetal:
             interfaces: [eno4]
             addresses: [10.20.3.12/24]
-            #mtu: 1500
+            mtu: 1500
             dhcp4: no
             dhcp6: no
     version: 2
@@ -292,6 +290,9 @@ network:
                 mode: 802.3ad
                 mii-monitor-interval: 1
     vlans:
+        vlan3:
+            id: 3
+            link: eno2
         vlan101:
             id: 101
             link: bond0
@@ -301,53 +302,49 @@ network:
         vlan103:
             id: 103
             link: bond0
-        vlan104:
-            id: 104
-            link: bond0
-        vlan105:
-            id: 105
-            link: bond0
     bridges:
         br-public:
             interfaces: [eno2, br-ovs-vp0]
             addresses: [${EX_ADDR}]
+            gateway4: ${EX_GW_ADDR}
             nameservers:
                 addresses: [8.8.8.8]
-            routes:
-                - to: 0.0.0.0/0
-                  via: ${EX_GW_ADDR}
-                  metric: 10
-            #mtu: 1500
+            mtu: 1500
+            dhcp4: no
+            dhcp6: no
+        br-ipmi:
+            interfaces: [vlan3]
+            addresses: [10.3.1.103/24]
+            mtu: 1500
             dhcp4: no
             dhcp6: no
         br-mgmt:
             interfaces: [${VLAN_MGMT}]
             addresses: [${MGMT_ADDR}]
-            #mtu: ${FIBER_MTU}
+            mtu: ${FIBER_MTU}
             dhcp4: no
             dhcp6: no
         br-vxlan:
             interfaces: [${VLAN_VXLAN}]
             addresses: [${VXLAN_ADDR}]
-            #mtu: ${FIBER_MTU}
+            mtu: ${FIBER_MTU}
             dhcp4: no
             dhcp6: no
         br-vlan:
             interfaces: [bond0, br-ovs-vp1]
-            addresses: [${VLAN_ADDR}]
-            #mtu: ${FIBER_MTU}
+            mtu: ${FIBER_MTU}
             dhcp4: no
             dhcp6: no
         br-lbaas:
             interfaces: [${VLAN_LBAAS}, br-ovs-vp2]
             addresses: [${LBAAS_ADDR}]
-            #mtu: 1500
+            mtu: 1500
             dhcp4: no
             dhcp6: no
         br-baremetal:
             interfaces: [eno4]
             addresses: [10.20.3.13/24]
-            #mtu: 1500
+            mtu: 1500
             dhcp4: no
             dhcp6: no
     version: 2

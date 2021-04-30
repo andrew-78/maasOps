@@ -97,12 +97,6 @@ network:
             mtu: ${FIBER_MTU}
             dhcp4: no
             dhcp6: no
-        br-replica:
-            interfaces: [${VLAN_REPLICA}]
-            addresses: [${REPLICA_ADDR}]
-            mtu: ${FIBER_MTU}
-            dhcp4: no
-            dhcp6: no
         br-vlan:
             interfaces: [bond0, br-dummy1]
             addresses: [${VLAN_ADDR}]
@@ -239,15 +233,8 @@ network:
             mtu: ${FIBER_MTU}
             dhcp4: no
             dhcp6: no
-        br-replica:
-            interfaces: [${VLAN_REPLICA}]
-            addresses: [${REPLICA_ADDR}]
-            mtu: ${FIBER_MTU}
-            dhcp4: no
-            dhcp6: no
         br-vlan:
             interfaces: [bond0, br-dummy1]
-            addresses: [${VLAN_ADDR}]
             mtu: ${FIBER_MTU}
             dhcp4: no
             dhcp6: no
@@ -381,15 +368,8 @@ network:
             mtu: ${FIBER_MTU}
             dhcp4: no
             dhcp6: no
-        br-replica:
-            interfaces: [${VLAN_REPLICA}]
-            addresses: [${REPLICA_ADDR}]
-            mtu: ${FIBER_MTU}
-            dhcp4: no
-            dhcp6: no
         br-vlan:
             interfaces: [bond0, br-dummy1]
-            addresses: [${VLAN_ADDR}]
             mtu: ${FIBER_MTU}
             dhcp4: no
             dhcp6: no

@@ -11,17 +11,14 @@ source config
 source ./lib/lib-ssh
 
 VLAN_MGMT=vlan101
-VLAN_REPLICA=vlan102
-VLAN_VXLAN=vlan103
-VLAN_STORAGE=vlan104
-VLAN_LBAAS=vlan105
-FIBER_MTU=9000
+VLAN_VXLAN=vlan102
+VLAN_LBAAS=vlan103
+FIBER_MTU=1500
 
 source ./lib/lib-network-controller
 source ./lib/lib-network-compute
-source ./lib/lib-network-ironic
 source ./lib/lib-network-storage
-source ./etc/node-ip-vars
+source ./etc/nodes-ip-vars
 
 REMOTE_NET_CONF_PATH="/etc/netplan/50-cloud-init.yaml"
 
